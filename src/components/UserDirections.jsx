@@ -3,7 +3,7 @@ import "./userdirections.css";
 import { Button, Dropdown, Form } from "react-bootstrap";
 import closeIcon from "../assets/images/x.svg";
 import { useNavigate } from "react-router-dom";
-import { TREE_PAGE } from "../util/consts";
+import {PROFILE_PAGE, TREE_PAGE} from "../util/consts";
 import { Context } from "..";
 import {addUserDirection, fetchAllDirections, fetchUserDirections, removeUserDirection} from "../util/network";
 
@@ -11,7 +11,7 @@ const UserDirections = (props) => {
     const [directions, setDirections] = useState([]);
     const navigate = useNavigate();
     const { direction } = useContext(Context);
-    const userId = props.userId;
+    const userId = props.userId
 
     const [allDirections, setAllDirections] = useState([])
 
@@ -30,11 +30,15 @@ const UserDirections = (props) => {
             directions.find((dir) => dir.id === Number(dirId)) !== undefined;
         if (alreadyExist) return;
 
-        let newDirection = getAllDirections().find(
-            (dir) => dir.id === Number(dirId)
+        let newDirection = allDirections.find(
+            (dir) => dir.id === String(dirId)
         );
+
+        console.log(dirId)
+        console.log(allDirections)
+
         setDirections((dirs) => {
-            return [...dirs.filter((dir) => dir.id !== dirId), newDirection];
+            return [...dirs, newDirection];
         });
         addUserDirection(userId, dirId)
     };
@@ -60,23 +64,25 @@ const UserDirections = (props) => {
                     Добавьте новое направление!
                 </p>
             )}
-            {directions.map((d) => (
-                <div style={{position: 'relative'}} key={d.id} className="dir-container">
-                    <button
-                      onClick={() => openTree(d.schema)}
-                      className={"direction " + d.color}
-                      key={d.id}
-                    >
-                        {d.name}
-                    </button>
-                    <button
-                      onClick={() => removeDirection(d.id)}
-                      className="del-dir-btn"
-                    >
-                        <img src={closeIcon} alt="" />
-                    </button>
-                </div>
-            ))}
+            {directions.map((d) => {
+                return (
+                  <div style={{position: 'relative'}} key={d.id} className="dir-container">
+                      <button
+                        onClick={() => openTree(d.schema)}
+                        className={"direction " + d.color}
+                        key={d.id}
+                      >
+                          {d.name}
+                      </button>
+                      <button
+                        onClick={() => removeDirection(d.id)}
+                        className="del-dir-btn"
+                      >
+                          <img src={closeIcon} alt="" />
+                      </button>
+                  </div>
+                )
+            })}
             {AddButton}
         </div>
     );
@@ -146,42 +152,4 @@ const createAddButton = (onSelectCallback, allDirections) => {
             </Dropdown.Menu>
         </Dropdown>
     );
-};
-
-const getAllDirections = () => {
-    return [
-        {
-            name: "Front-End",
-            color: "",
-            id: 1,
-        },
-        {
-            name: "Back-End",
-            color: "green",
-            id: 2,
-        },
-        {
-            name: "Дизайн",
-            color: "orange",
-            id: 3,
-        },
-        {
-            name: "Тестирование",
-            color: "orange",
-            id: 4,
-        },
-        {
-            name: "Dev-Ops",
-            color: "red",
-            id: 5,
-        },
-    ];
-};
-
-const getUserDirections = () => {
-    let savedDirections = localStorage.getItem("UserDirections");
-
-    if (savedDirections == null) return [];
-
-    return JSON.parse(savedDirections);
 };

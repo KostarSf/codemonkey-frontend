@@ -25,11 +25,15 @@ const ProfilePage = () => {
         if (!userId) {
             navigation(AUTH_PAGE)
         }
+        fetchInfo()
+    }, [])
+
+    const fetchInfo = () => {
         fetchUserInfo(userId).then(data => {
             setName(data.name)
             setAbout(data.about)
         })
-    }, [])
+    }
 
     const toggleEdit = () => {
         if (edit && name === "") {
